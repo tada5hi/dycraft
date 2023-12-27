@@ -5,6 +5,7 @@
  * view the LICENSE file that was distributed with this source code.
  */
 
+import { hasOwnProperty } from '../../src/utils';
 import { defineGetter, dycraft } from '../../src';
 
 type FooRecord = {
@@ -95,5 +96,90 @@ describe('src/defaults', () => {
 
         keys = Object.keys(record);
         expect(keys).toEqual(['foo', 'boo']);
+    });
+
+    it('should disable defaults get & has', () => {
+        const record = dycraft({
+            data: {} as FooRecord,
+            defaults: {
+                foo: 'bar',
+            } as FooRecord,
+            defaultsHas: false,
+            defaultsGet: false,
+        });
+
+        expect(('foo' in record)).toBeFalsy();
+        expect(hasOwnProperty(record, 'foo')).toBeFalsy();
+        expect(record.foo).toBeUndefined();
+
+        record.foo = 'boz';
+
+        expect(('foo' in record)).toBeTruthy();
+        expect(hasOwnProperty(record, 'foo')).toBeTruthy();
+        expect(record.foo).toEqual('boz');
+
+        delete record.foo;
+
+        expect(('foo' in record)).toBeFalsy();
+        expect(hasOwnProperty(record, 'foo')).toBeFalsy();
+        expect(record.foo).toBeUndefined();
+
+        expect(record.$defaultsHas).toBeFalsy();
+        record.$defaultsHas = true;
+        expect(record.$defaultsHas).toBeTruthy();
+
+        expect(('foo' in record)).toBeTruthy();
+        expect(hasOwnProperty(record, 'foo')).toBeTruthy();
+        expect(record.foo).toBeUndefined();
+
+        expect(record.$defaultsGet).toBeFalsy();
+        record.$defaultsGet = true;
+        expect(record.$defaultsGet).toBeTruthy();
+
+        expect(('foo' in record)).toBeTruthy();
+        expect(hasOwnProperty(record, 'foo')).toBeTruthy();
+        expect(record.foo).toEqual('bar');
+    });
+
+    it('should disable getters get & has', () => {
+        const record = dycraft({
+            data: {} as FooRecord,
+            getters: {
+                foo: defineGetter(() => 'bar'),
+            },
+            gettersGet: false,
+            gettersHas: false,
+        });
+
+        expect(('foo' in record)).toBeFalsy();
+        expect(record.foo).toBeUndefined();
+
+        record.foo = 'boz';
+
+        expect(('foo' in record)).toBeTruthy();
+        expect(hasOwnProperty(record, 'foo')).toBeTruthy();
+        expect(record.foo).toEqual('boz');
+
+        delete (record as any).foo;
+
+        expect(('foo' in record)).toBeFalsy();
+        expect(hasOwnProperty(record, 'foo')).toBeFalsy();
+        expect(record.foo).toBeUndefined();
+
+        expect(record.$gettersHas).toBeFalsy();
+        record.$gettersHas = true;
+        expect(record.$gettersHas).toBeTruthy();
+
+        expect(('foo' in record)).toBeTruthy();
+        expect(hasOwnProperty(record, 'foo')).toBeTruthy();
+        expect(record.foo).toBeUndefined();
+
+        expect(record.$gettersGet).toBeFalsy();
+        record.$gettersGet = true;
+        expect(record.$gettersGet).toBeTruthy();
+
+        expect(('foo' in record)).toBeTruthy();
+        expect(hasOwnProperty(record, 'foo')).toBeTruthy();
+        expect(record.foo).toEqual('bar');
     });
 });

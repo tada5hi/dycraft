@@ -1,20 +1,20 @@
+import { OutputOptionKey } from './constants';
 import type {
     Context,
     Getter,
     Getters,
-    GettersToRecord,
     ObjectEmptyLiteral,
     ObjectLiteral,
-    UnionToIntersection,
+    Output,
 } from './types';
 
 import { hasOwnProperty } from './utils';
 
 export function dycraft<
     DATA extends ObjectLiteral,
-    DEFAULT extends ObjectLiteral = ObjectEmptyLiteral,
+    DEFAULTS extends ObjectLiteral = ObjectEmptyLiteral,
     GETTERS extends Getters = ObjectEmptyLiteral,
->(context: Context<DATA, DEFAULT, GETTERS> = {}) : UnionToIntersection<DEFAULT | DATA | GettersToRecord<GETTERS>> {
+>(context: Context<DATA, DEFAULTS, GETTERS> = {}) : Output<DATA, DEFAULTS, GETTERS> {
     const extraKeys: string[] = [];
 
     if (context.defaults) {
@@ -24,6 +24,12 @@ export function dycraft<
     if (context.getters) {
         extraKeys.push(...Object.keys(context.getters));
     }
+
+    let defaultsGet = context.defaultsGet ?? true;
+    let defaultsHas = context.defaultsHas ?? true;
+
+    let gettersGet = context.gettersGet ?? true;
+    let gettersHas = context.gettersHas ?? true;
 
     return new Proxy(context.data || {}, {
         ownKeys(_target: Record<string | symbol, any>): ArrayLike<string | symbol> {
@@ -38,8 +44,8 @@ export function dycraft<
             }
 
             if (
-                (context.getters && hasOwnProperty(context.getters, p)) ||
-                (context.defaults && hasOwnProperty(context.defaults, p))
+                (gettersHas && context.getters && hasOwnProperty(context.getters, p)) ||
+                (defaultsHas && context.defaults && hasOwnProperty(context.defaults, p))
             ) {
                 return {
                     configurable: true,
@@ -51,6 +57,23 @@ export function dycraft<
             return undefined;
         },
         set(_target: Record<string | symbol, any>, p: string | symbol, newValue: any): boolean {
+            if (p === OutputOptionKey.GETTERS_GET) {
+                gettersGet = newValue;
+                return true;
+            }
+
+            if (p === OutputOptionKey.GETTERS_HAS) {
+                gettersHas = newValue;
+            }
+
+            if (p === OutputOptionKey.DEFAULTS_GET) {
+                defaultsGet = newValue;
+            }
+
+            if (p === OutputOptionKey.DEFAULTS_HAS) {
+                defaultsHas = newValue;
+            }
+
             _target[p] = newValue;
 
             return true;
@@ -60,15 +83,41 @@ export function dycraft<
                 return true;
             }
 
-            return !!((context.getters && hasOwnProperty(context.getters, p)) ||
-                (context.defaults && hasOwnProperty(context.defaults, p)));
+            if (
+                defaultsHas &&
+                context.defaults &&
+                hasOwnProperty(context.defaults, p)
+            ) {
+                return true;
+            }
+
+            return !!(gettersHas &&
+                context.getters &&
+                hasOwnProperty(context.getters, p));
         },
         get(_target: Record<string | symbol, any>, p: string | symbol): any {
+            if (p === OutputOptionKey.GETTERS_GET) {
+                return gettersGet;
+            }
+
+            if (p === OutputOptionKey.GETTERS_HAS) {
+                return gettersHas;
+            }
+
+            if (p === OutputOptionKey.DEFAULTS_GET) {
+                return defaultsGet;
+            }
+
+            if (p === OutputOptionKey.DEFAULTS_HAS) {
+                return defaultsHas;
+            }
+
             if (hasOwnProperty(_target, p)) {
                 return _target[p];
             }
 
             if (
+                gettersGet &&
                 context.getters &&
                 hasOwnProperty(context.getters, p)
             ) {
@@ -96,6 +145,7 @@ export function dycraft<
             }
 
             if (
+                defaultsGet &&
                 context.defaults &&
                 hasOwnProperty(context.defaults, p)
             ) {
@@ -104,5 +154,5 @@ export function dycraft<
 
             return undefined;
         },
-    }) as UnionToIntersection<DEFAULT | DATA | GettersToRecord<GETTERS>>;
+    }) as Output<DATA, DEFAULTS, GETTERS>;
 }

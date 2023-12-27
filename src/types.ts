@@ -1,7 +1,9 @@
+import type { OutputOptionKey } from './constants';
+
 export type ObjectLiteral = Record<string, any>;
 export type ObjectEmptyLiteral = Record<string, never>;
 
-export type UnionToIntersection<U> =
+type UnionToIntersection<U> =
     (U extends any ? (k: U) => void : never) extends ((k: infer I)=>void) ? I : never;
 
 export type GetterContext = {
@@ -32,5 +34,33 @@ export type Context<
 > = {
     data?: DATA,
     defaults?: DEFAULT,
+    /**
+     *
+     * @experimental
+     */
+    defaultsGet?: boolean,
+    /**
+     *
+     * @experimental
+     */
+    defaultsHas?: boolean,
     getters?: GETTERS
+    /**
+     *
+     * @experimental
+     */
+    gettersGet?: boolean,
+    /**
+     *
+     * @experimental
+     */
+    gettersHas?: boolean
 };
+
+export type OutputOptions = Record<`${OutputOptionKey}`, boolean>;
+
+export type Output<
+    DATA extends ObjectLiteral = ObjectEmptyLiteral,
+    DEFAULT extends ObjectLiteral = ObjectEmptyLiteral,
+    GETTERS extends Getters = ObjectEmptyLiteral,
+> = UnionToIntersection<DEFAULT | DATA | GettersToRecord<GETTERS> | OutputOptions>;
