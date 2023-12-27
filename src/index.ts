@@ -1,3 +1,3 @@
-export function add(a: number, b: number) : number {
-    return a + b;
-}
+export * from './define';
+export * from './module';
+export * from './types';
