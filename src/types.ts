@@ -1,5 +1,3 @@
-import type { OutputOptionKey } from './constants';
-
 export type ObjectLiteral = Record<string, any>;
 export type ObjectEmptyLiteral = Record<string, never>;
 
@@ -35,29 +33,42 @@ export type Context<
     data?: DATA,
     defaults?: DEFAULT,
     /**
-     *
      * @experimental
      */
     defaultsGet?: boolean,
     /**
-     *
      * @experimental
      */
     defaultsHas?: boolean,
     getters?: GETTERS
     /**
-     *
      * @experimental
      */
     gettersGet?: boolean,
     /**
-     *
      * @experimental
      */
     gettersHas?: boolean
 };
 
-export type OutputOptions = Record<`${OutputOptionKey}`, boolean>;
+export type OutputOptions = {
+    /**
+     * @experimental
+     */
+    $defaultsGet?: boolean,
+    /**
+     * @experimental
+     */
+    $defaultsHas?: boolean,
+    /**
+     * @experimental
+     */
+    $gettersGet?: boolean,
+    /**
+     * @experimental
+     */
+    $gettersHas?: boolean
+};
 
 export type Output<
     DATA extends ObjectLiteral = ObjectEmptyLiteral,
