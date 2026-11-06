@@ -1,8 +1,7 @@
 export type ObjectLiteral = Record<string, any>;
 export type ObjectEmptyLiteral = Record<string, never>;
 
-type UnionToIntersection<U> =
-    (U extends any ? (k: U) => void : never) extends ((k: infer I)=>void) ? I : never;
+type UnionToIntersection<U> =    (U extends any ? (k: U) => void : never) extends ((k: infer I)=>void) ? I : never;
 
 export type GetterContext = {
     has(key: string) : boolean;
@@ -20,9 +19,9 @@ export type GettersToRecord<
 > = {
     [K in keyof T]: T[K] extends Getters ?
         GettersToRecord<T[K]> :
-        (T[K] extends (...args: any[]) => infer R
-            ? R
-            : never)
+        (T[K] extends (...args: any[]) => infer R ?
+            R :
+            never)
 };
 
 export type Context<
