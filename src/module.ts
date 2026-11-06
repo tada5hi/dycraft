@@ -59,6 +59,7 @@ export function dycraft<
         set(_target: Record<string | symbol, any>, p: string | symbol, newValue: any): boolean {
             if (p === OutputOptionKey.GETTERS_GET) {
                 gettersGet = newValue;
+
                 return true;
             }
 
@@ -122,6 +123,7 @@ export function dycraft<
                 hasOwnProperty(context.getters, p)
             ) {
                 const getter = context.getters[p] as Getter;
+
                 return getter({
                     has: (key) => {
                         if (key === p) {
