@@ -25,6 +25,19 @@ The dycraft proxy reads an own data property first, otherwise evaluates an enabl
 
 <img src=".github/assets/mechanism.svg" width="960" alt="The dycraft proxy reads an own data property first, otherwise evaluates an enabled getter, otherwise returns an enabled default. Writes go to the original data object." />
 
+**Table of Contents**
+
+- [Why dycraft?](#why-dycraft)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Defaults](#defaults)
+  - [Getters](#getters)
+- [Options](#options)
+- [API](#api)
+- [Notes](#notes)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Installation
 
 ```bash
@@ -49,6 +62,52 @@ config.port = 8080;
 console.log(config.url); // http://localhost:8080
 console.log(data); // { host: 'localhost', port: 8080 }
 ```
+
+### Defaults
+
+Defaults remain separate from the original data. An own data property wins; deleting that property exposes its fallback. `delete` acts on the original target, not on the defaults record.
+
+```typescript
+import { dycraft } from 'dycraft';
+
+type Settings = { foo: string, bar: string };
+const data: Partial<Settings> = { foo: 'bar' };
+const record = dycraft({ data, defaults: { foo: 'baz', bar: 'boz' } });
+console.log(record.foo); // bar
+console.log(record.bar); // boz
+Reflect.deleteProperty(record, 'foo');
+console.log(record.foo); // baz
+console.log(data.foo); // undefined
+```
+
+### Getters
+
+Use `defineGetter` for a typed getter definition. The context reads through the same data/getter/default resolution rules as ordinary property access. Removing an input changes the next computed result.
+
+```typescript
+import { defineGetter, dycraft } from 'dycraft';
+
+type Settings = { foo: string, bar: string };
+const data: Partial<Settings> = { foo: 'bar' };
+const record = dycraft({
+    data,
+    getters: {
+        bar: defineGetter((context): string => {
+            if (context.has('foo')) {
+                return context.get('foo');
+            }
+            return 'baz';
+        }),
+    },
+});
+console.log(record.foo); // bar
+console.log(record.bar); // bar
+Reflect.deleteProperty(record, 'foo');
+console.log(record.foo); // undefined
+console.log(record.bar); // baz
+```
+
+Getter errors propagate from the property read. The getter context prevents a direct read of the same getter from recurring, but does not detect cycles across multiple getter names.
 
 ## Options
 
