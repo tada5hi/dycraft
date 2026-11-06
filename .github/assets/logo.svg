@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="dycraft-b-title dycraft-b-desc">
+<title id="dycraft-b-title">dycraft — The proxy prism</title>
+<desc id="dycraft-b-desc">Two translucent property layers are read through a live proxy prism into one visible object.</desc>
+<style>
+:root{--accent:#bb64a1;--second:#637dcc;--ink:#253447;--paper:#f7fafc;--line:#8394a7;--wash:#bb64a118}
+@media(prefers-color-scheme:dark){:root{--ink:#e4ebf3;--paper:#182332;--line:#8495aa;--wash:#bb64a122}}
+.a{stroke:var(--accent)}.b{stroke:var(--second)}.af{fill:var(--accent)}.bf{fill:var(--second)}.ink{fill:var(--ink)}.paper{stroke:var(--line)}.line{stroke:var(--line)}.wash{fill:var(--wash)}.white{fill:#fff}.neutral{fill:var(--paper)}
+</style>
+<path d="M39 77 L112 37 L187 77 L112 118 Z" class="a" stroke-width="5" fill="var(--wash)" stroke-linecap="round" stroke-linejoin="round" /><path d="M39 119 L112 79 L187 119 L112 160 Z" class="b" stroke-width="5" fill="var(--wash)" stroke-linecap="round" stroke-linejoin="round" /><path d="M39 161 L112 121 L187 161 L112 202 Z" class="a" stroke-width="5" fill="var(--paper)" stroke-linecap="round" stroke-linejoin="round" /><path d="M112 202 V226 M187 161 V184 L112 226 L39 184 V161" class="a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" /><path d="M209 77 V170 M199 87 L209 77 L219 87 M199 160 L209 170 L219 160" class="b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" /><circle cx="112" cy="161" r="9" class="bf" /><circle cx="112" cy="77" r="5" class="af" />
+</svg>
